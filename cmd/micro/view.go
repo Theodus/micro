@@ -304,6 +304,9 @@ func (v *View) VSplitIndex(buf *Buffer, splitIndex int) {
 // GetSoftWrapLocation gets the location of a visual click on the screen and converts it to col,line
 func (v *View) GetSoftWrapLocation(vx, vy int) (int, int) {
 	if !v.Buf.Settings["softwrap"].(bool) {
+		if vy >= v.Buf.NumLines {
+			vy = v.Buf.NumLines - 1
+		}
 		vx = v.Cursor.GetCharPosInLine(vy, vx)
 		return vx, vy
 	}
@@ -311,6 +314,9 @@ func (v *View) GetSoftWrapLocation(vx, vy int) (int, int) {
 	screenX, screenY := 0, v.Topline
 	for lineN := v.Topline; lineN < v.Bottomline(); lineN++ {
 		line := v.Buf.Line(lineN)
+		if lineN >= v.Buf.NumLines {
+			return 0, v.Buf.NumLines - 1
+		}
 
 		colN := 0
 		for _, ch := range line {
